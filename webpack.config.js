@@ -1,5 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 module.exports = {
     entry: {
@@ -8,17 +10,9 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.css$/i,
-                use: ['style-loader', 'css-loader'],
-            },
-            {
-                test: /\.s[ac]ss$/i,
-                use: [
-                "style-loader",
-                "css-loader",
-                "sass-loader",
-                ],
-            },
+                test: /.s?css$/,
+                use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+              },
             {
                 test: /\.(ico|png|jpg|jpeg|gif)$/i,
                 type: 'asset/resource',
@@ -33,7 +27,7 @@ module.exports = {
         path: path.resolve(__dirname, './dist'),
         filename: '[name].bundle.js',
     },
-    mode: 'development',
+    mode: 'production',
     devServer: {
     static: path.resolve(__dirname, './dist'),
     open: true,
@@ -44,11 +38,17 @@ module.exports = {
     resolve: {
     extensions: ['.ts, .js'],
     },
+    optimization: {
+        minimizer: [
+          new CssMinimizerPlugin(),
+        ],
+    },
     plugins: [
     new HtmlWebpackPlugin({
         favicon:	'./src/images/favicon/favicon.ico',
         template: path.resolve(__dirname, './src/template.html'),
         filename: 'index.html',
     }),
+    new MiniCssExtractPlugin(),
     ],
 };

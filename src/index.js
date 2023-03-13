@@ -6,7 +6,7 @@ window.onload = function () {
   window.setTimeout(function () {
     document.body.classList.add('loaded');
     document.body.classList.remove('loaded--hiding');
-  }, 1000);
+  }, 100);
 };
 
 const main = document.querySelector('main');
