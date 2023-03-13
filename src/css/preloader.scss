@@ -44,7 +44,6 @@
 }
 
 @keyframes preloader-bounce {
-
   0%,
   100% {
       transform: scale(0);
@@ -55,7 +54,7 @@
   }
 }
 
-.loaded_hiding .preloader {
+.loaded--hiding .preloader {
   transition: 0.3s opacity;
   opacity: 0;
 }

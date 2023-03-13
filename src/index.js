@@ -2,11 +2,11 @@ import './css/normalize.css';
 import './css/style.scss';
 
 window.onload = function () {
-  document.body.classList.add('loaded_hiding');
+  document.body.classList.add('loaded--hiding');
   window.setTimeout(function () {
     document.body.classList.add('loaded');
-    document.body.classList.remove('loaded_hiding');
-  }, 500);
+    document.body.classList.remove('loaded--hiding');
+  }, 1000);
 }
 
 const main = document.querySelector('main');
@@ -91,9 +91,9 @@ async function getQuote() {
 
 function showPopup(data) {
   if (data.author.length < 3) {
-    popUpMessage.textContent = `Имя автора должно быть длиннее 4 букв`;
+    popUpMessage.textContent = `Имя автора должно быть длиннее 3 букв`;
   } else {
-    popUpMessage.textContent = `Цитата должна быть длиннее 6 букв`;
+    popUpMessage.textContent = `Цитата должна быть длиннее 5 букв`;
   }
   
   popUpWrapper.classList.toggle('hidden');
@@ -129,35 +129,41 @@ function setHandlers() {
     };
 
     if (event.target.className.includes('comment__submit')) {
-      if (data.author.length < 3 || data.content.length < 8) {
+      if (data.author.length < 3 || data.content.length < 5) {
         showPopup(data);
       } else {
         createPost(data);
+
+        for (let i = 0; i < comment.elements.length; i++) {
+          comment.elements[i].value = '';
+        }
       }
 
       if (window.popUp) {
         closePopup();
       }      
-
-      for (let i = 0; i < comment.elements.length; i++) {
-        comment.elements[i].value = '';
-      }
     }
   }
 }
 
 function getReadblePostDate(postDate) {
   const date = new Date();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
   const quoteDate = new Date(postDate);
   const timeSincePosted = (date - quoteDate) / 1000;
   let dateString = null;
 
   if (timeSincePosted <= 48 * 60 * 60 && timeSincePosted >= 0) {
     dateString = date.getDay() !== quoteDate.getDay() ?
-     `вчера, ${date.getHours()}:${date.getMinutes()}` :
-      `сегодня, ${date.getHours()}:${date.getMinutes()}`;
+     `вчера, ${addZero(hours)}:${addZero(minutes)}` :
+      `сегодня, ${addZero(hours)}:${addZero(minutes)}`;
   } else {
     dateString = postDate;
+  }
+
+  function addZero(time) {
+    return time < 10 ? `0${time}` : time;
   }
 
   return dateString;
