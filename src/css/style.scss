@@ -89,10 +89,12 @@ button {
 
     &__content {
         min-width: 200px;
-        width: 70vw;;
+        width: 70vw;
+        max-width: 700px;
         margin-bottom: 10px;
         font-size: 14px;
         font-style: italic;
+        overflow: hidden;
     }
 
     &__author {
@@ -125,12 +127,6 @@ button {
     }
 }
 
-.add-comment {
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 30px 30px 10px $dark-shadow-color;
-}
-
 input,
 textarea {
     border-style: none;
@@ -140,15 +136,21 @@ textarea {
 }
 
 .comment {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: max-content;
-    height: 300px;
-    min-height: min-content;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 30px 30px 10px $dark-shadow-color;
 
-    & ~ div {
+    &__form {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: max-content;
+        height: 300px;
+        min-height: min-content;
+    }
+
+    & div {
         position: relative;
     }
 
@@ -174,7 +176,7 @@ textarea {
         left: 5px;
         top: 8px;
         color: $light-dark-font-color;
-        transition: 0.2s ease all;
+        transition: 0.1s ease all;
         opacity: 0;
     }
 
@@ -193,11 +195,6 @@ textarea {
             box-shadow: 0 10px 20px 0 $accent-shadow-color;
         }
     }
-}
-
-.form__submit {
-    width:100%;
-    margin-top:50px;
 }
 
 .footer {
@@ -253,13 +250,22 @@ textarea {
 }
 
 @media screen and (max-width: 680px) {
-    .add-comment {
-        width: 95vw;
+    .post {
+        padding: 10px 30px 5px 15px;
+
+        &__close-button {
+            right: 5px;
+        }
     }
 
     .comment {
-        align-items: center;
+        min-width: 360px;
+        width: 80vw;
 
+        &__form {
+            align-items: center;
+        }
+    
         &__name,
         &__text {
             width: 300px;

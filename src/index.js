@@ -7,10 +7,11 @@ window.onload = function () {
     document.body.classList.add('loaded');
     document.body.classList.remove('loaded--hiding');
   }, 1000);
-}
+};
 
 const main = document.querySelector('main');
-const comment = document.querySelector('.comment');
+const comment = document.querySelector('.comment__form');
+const formDate = document.querySelector('.comment__date');
 const posts = document.createElement('div');
 const popUpWrapper = document.createElement('div');
 const popUp = document.createElement('div');
@@ -23,6 +24,8 @@ popUpButton.classList.add('popup__close-button');
 posts.classList.add('posts');
 popUpButton.textContent = 'x';
 
+setDefaultDate(formDate);
+main.prepend(posts);
 popUp.append(popUpMessage);
 popUp.append(popUpButton);
 popUpWrapper.append(popUp);
@@ -30,25 +33,24 @@ document.body.append(popUpWrapper);
 popUpButton.addEventListener('click', closePopup);
 
 async function createPosts() {
-  function randomInteger(min, max) {
-    let rand = min - 0.5 + Math.random() * (max - min + 1);
-
-    return Math.round(rand);
-  }
-
   const postsNumber = randomInteger(1, 5);
 
   for (let i = 0; i <= postsNumber; i++) {
     await getQuote();
   }
-  
 };
+
+function randomInteger(min, max) {
+  let rand = min - 0.5 + Math.random() * (max - min + 1);
+
+  return Math.round(rand);
+}
 
 createPosts().then(() => {
   setHandlers();
 });
 
-main.prepend(posts);
+
 
 function createPost(data) {
   const postClose = document.createElement('button');
@@ -69,7 +71,6 @@ function createPost(data) {
 
   postContent.textContent = data.content;
   postAuthor.textContent = data.author;
-
   postDate.textContent = getReadblePostDate(data.dateAdded)
 
   post.append(postClose);
@@ -89,6 +90,47 @@ async function getQuote() {
   createPost(data);
 }
 
+function setHandlers() {
+  posts.addEventListener('click', handlePosts);
+  comment.addEventListener('click', handleComment);
+}
+
+function handlePosts(event) {
+  if (event.target.classList[0] === 'post__like') {
+    event.target.classList.toggle('post__like--active');
+  }
+
+  if (event.target.classList[0] === 'post__close-button') {
+    event.target.parentNode.remove();
+  }
+}
+
+function handleComment(event) {
+  if (event.target.className !== 'comment__date') {
+    event.preventDefault();
+  }
+
+  const data = {
+    author: comment.elements[0].value,
+    content: comment.elements[1].value,
+    dateAdded: comment.elements[2].value || getReadblePostDate(new Date())
+  };
+
+  if (event.target.className.includes('comment__submit')) {
+    if (data.author.length < 3 || data.content.length < 5) {
+      showPopup(data);
+    } else {
+      createPost(data);
+
+      clearForm(comment);
+    }
+
+    if (window.popUp) {
+      closePopup();
+    }      
+  }
+}
+
 function showPopup(data) {
   if (data.author.length < 3) {
     popUpMessage.textContent = `Имя автора должно быть длиннее 3 букв`;
@@ -103,47 +145,16 @@ function closePopup() {
   popUpWrapper.classList.add('hidden');
 }
 
-function setHandlers() {
-  posts.addEventListener('click', handlePosts);
-  comment.addEventListener('click', handleComment);
-
-  function handlePosts(event) {
-    if (event.target.classList[0] === 'post__like') {
-      event.target.classList.toggle('post__like--active');
-    }
-
-    if (event.target.classList[0] === 'post__close-button') {
-      event.target.parentNode.remove();
-    }
+function clearForm(form) {
+  for (let i = 0; i < form.elements.length; i++) {
+    form.elements[i].value = '';
   }
 
-  function handleComment(event) {
-    if (event.target.className !== 'comment__date') {
-      event.preventDefault();
-    }
+  setDefaultDate(formDate);
+}
 
-    const data = {
-      author: comment.elements[0].value,
-      content: comment.elements[1].value,
-      dateAdded: comment.elements[2].value || getReadblePostDate(new Date())
-    };
-
-    if (event.target.className.includes('comment__submit')) {
-      if (data.author.length < 3 || data.content.length < 5) {
-        showPopup(data);
-      } else {
-        createPost(data);
-
-        for (let i = 0; i < comment.elements.length; i++) {
-          comment.elements[i].value = '';
-        }
-      }
-
-      if (window.popUp) {
-        closePopup();
-      }      
-    }
-  }
+function setDefaultDate(formDate) {
+  formDate.value = new Date().toISOString().slice(0, 10);
 }
 
 function getReadblePostDate(postDate) {
@@ -159,7 +170,7 @@ function getReadblePostDate(postDate) {
      `вчера, ${addZero(hours)}:${addZero(minutes)}` :
       `сегодня, ${addZero(hours)}:${addZero(minutes)}`;
   } else {
-    dateString = postDate;
+    dateString = `${postDate}, ${addZero(hours)}:${addZero(minutes)}`;
   }
 
   function addZero(time) {
